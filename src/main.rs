@@ -1,26 +1,28 @@
 use std::io::Result;
-use actix_web::{ HttpServer, HttpResponse, App, get, Responder };
+use actix_web::{
+    HttpServer,
+    App,
+    web:: {
+        scope,
+    }
+};
 
-#[get("/")]
-async fn handle_base() -> impl Responder {
-    println!("logando o caminho base");
+mod base;
+mod auth;
 
-    HttpResponse::Ok()
-}
-
-#[get("/hello")]
-async fn handle_hello() -> impl Responder {
-    println!("logando o hello!");
-
-    HttpResponse::Ok()
-}
+use auth::auth_service;
+use base::base_service;
 
 #[actix_web::main]
 async fn main() -> Result<()> {
     HttpServer::new(|| {
         App::new()
-            .service(handle_base)
-            .service(handle_hello)
+            .service(
+                scope("/api").configure(base_service)
+            )
+            .service(
+                scope("/auth").configure(auth_service)
+            )
     })
     .bind(("http://127.0.0.1", 8080))?
     .run()
