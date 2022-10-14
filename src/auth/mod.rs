@@ -3,12 +3,25 @@ use actix_web::{
     Responder,
     HttpResponse,
     web::{
+        Json,
         ServiceConfig
     }
 };
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+struct Auth {
+    username: String,
+    password: String
+}
 
 #[post("/login")]
-async fn login() -> impl Responder {
+async fn login(auth: Json<Auth>) -> impl Responder {
+
+    if auth.username == String::from("julionm") {
+        println!("Everything is great! You're logged!")
+    }
+
     HttpResponse::Ok()
 }
 
